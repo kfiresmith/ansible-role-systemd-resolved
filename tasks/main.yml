@@ -1,12 +1,12 @@
 ---
 
 - name: install systemd
-  pacman:
+  ansible.builtin.package:
     name: systemd
     state: present
 
 - name: configure systemd-resolved
-  template:
+  ansible.builtin.template:
     src: resolved.conf.j2
     dest: /etc/systemd/resolved.conf
     owner: root
@@ -14,8 +14,22 @@
     mode: 0644
   register: __systemd_resolved_configuration
 
+- name: link /etc/resolv.conf to stub
+  ansible.builtin.file:
+    src: /run/systemd/resolve/stub-resolv.conf
+    dest: /etc/resolv.conf
+    state: link
+  when: systemd_resolved_dns_stub_listener|bool
+
+- name: link /etc/resolv.conf to full systemd resolv.conf
+  ansible.builtin.file:
+    src: /run/systemd/resolve/resolv.conf
+    dest: /etc/resolv.conf
+    state: link
+  when: not systemd_resolved_dns_stub_listener|bool
+
 - name: enable systemd-resolved service and assure it is started
-  systemd:
+  ansible.builtin.systemd:
     name: systemd-resolved
     enabled: yes
     state: >-
@@ -24,11 +38,4 @@
           default(False) |
           ternary("restarted", "started")
       }}
-
-- name: link /etc/resolv.conf to stub
-  file:
-    src: /run/systemd/resolve/stub-resolv.conf
-    dest: /etc/resolv.conf
-    state: link
-
 ...

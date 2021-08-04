@@ -53,9 +53,9 @@ systemd_resolved_llmnr: 'yes'
 systemd_resolved_multicast_dns: 'yes'
 systemd_resolved_dnssec: 'allow-downgrade'
 systemd_resolved_dns_over_tls: 'no'
-systemd_resolved_cache: yes
+systemd_resolved_cache: 'yes'
 systemd_resolved_dns_stub_listener: 'yes'
-systemd_resolved_read_etc_hosts: yes
+systemd_resolved_read_etc_hosts: 'yes'
 ```
 
 For more information, read `man 5 resolved.conf`.
